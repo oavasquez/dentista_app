@@ -17,7 +17,8 @@
 .services,
 .team-section,
 .testimonial,
-.content-band {
+.content-band,
+.doctor-panel {
   max-width: 1180px;
   margin: 0 auto;
 }
@@ -84,7 +85,9 @@ a {
 .nav-links a,
 .nav-cta,
 .primary-button,
-.secondary-button {
+.secondary-button,
+.refresh-button,
+.attended-button {
   border-radius: 999px;
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
@@ -250,7 +253,8 @@ a {
 .services,
 .team-section,
 .testimonial,
-.content-band {
+.content-band,
+.doctor-panel {
   padding: 78px 0 0;
 }
 
@@ -517,6 +521,147 @@ cite {
   font-weight: 800;
 }
 
+.form-status {
+  margin: 0;
+  color: #d8e8ff;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.doctor-panel {
+  padding: 32px 0 54px;
+}
+
+.doctor-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 30px;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(31, 86, 145, 0.1);
+}
+
+.doctor-header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.03;
+}
+
+.doctor-header p:not(.eyebrow) {
+  max-width: 640px;
+  margin: 12px 0 0;
+  color: #5d7290;
+  line-height: 1.6;
+}
+
+.refresh-button {
+  flex: 0 0 auto;
+  border: 0;
+  cursor: pointer;
+}
+
+.doctor-status {
+  margin: 18px 0;
+  color: #536a88;
+  font-weight: 800;
+}
+
+.appointments-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.appointment-card,
+.empty-appointments {
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(31, 86, 145, 0.1);
+}
+
+.appointment-card {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.appointment-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.appointment-card h3,
+.empty-appointments h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.appointment-card span {
+  display: block;
+  margin-top: 6px;
+  color: #5d7290;
+  font-weight: 800;
+}
+
+.appointment-card-header strong {
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #073b7a;
+  background: #eef5ff;
+  white-space: nowrap;
+}
+
+.appointment-card dl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 0;
+}
+
+.appointment-card dl div {
+  padding: 12px;
+  border-radius: 14px;
+  background: #f7fbff;
+}
+
+.appointment-card dt {
+  color: #6d7f97;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.appointment-card dd {
+  margin: 4px 0 0;
+  color: #0b2f5f;
+  font-weight: 900;
+}
+
+.appointment-notes {
+  margin: 0;
+  color: #536a88;
+  line-height: 1.6;
+}
+
+.attended-button {
+  width: 100%;
+  border: 0;
+  cursor: pointer;
+}
+
+.empty-appointments {
+  padding: 30px;
+}
+
+.empty-appointments p {
+  margin: 8px 0 0;
+  color: #5d7290;
+}
+
 @media (max-width: 980px) {
   .site-shell {
     padding: 16px;
@@ -535,6 +680,15 @@ cite {
   .philosophy,
   .testimonial,
   .content-band {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .appointments-grid {
     grid-template-columns: 1fr;
   }
 
@@ -597,12 +751,24 @@ cite {
 
   .testimonial,
   .article-panel,
-  .contact-panel {
+  .contact-panel,
+  .doctor-header,
+  .appointment-card,
+  .empty-appointments {
     padding: 24px;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .appointment-card-header,
+  .appointment-card dl {
+    grid-template-columns: 1fr;
+  }
+
+  .appointment-card-header {
+    display: grid;
   }
 
   blockquote {

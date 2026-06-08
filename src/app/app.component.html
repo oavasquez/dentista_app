@@ -1,10 +1,11 @@
 <main class="site-shell">
+  <ng-container *ngIf="!showDoctorModule">
   <nav class="topbar" aria-label="Navegacion principal">
-    <a class="brand" href="#inicio" aria-label="Clinica Den">
+    <a class="brand" href="#inicio" [attr.aria-label]="siteConfig.clinicName">
       <span class="brand-mark">D</span>
       <span>
-        <strong>Clinica Den</strong>
-        <small>Salud dental integral</small>
+        <strong>{{ siteConfig.clinicName }}</strong>
+        <small>{{ siteConfig.clinicSubtitle }}</small>
       </span>
     </a>
 
@@ -21,11 +22,8 @@
   <section id="inicio" class="hero">
     <div class="hero-copy">
       <p class="eyebrow">Odontologia moderna en un entorno seguro</p>
-      <h1>Donde tu sonrisa vuelve a sentirse natural.</h1>
-      <p class="hero-text">
-        Diagnostico digital, tratamientos preventivos y especialistas para cada etapa de tu
-        cuidado dental.
-      </p>
+      <h1>{{ siteConfig.heroTitle }}</h1>
+      <p class="hero-text">{{ siteConfig.heroText }}</p>
       <div class="hero-actions">
         <a class="primary-button" href="#contacto">Agendar evaluacion</a>
         <a class="secondary-button" href="#servicios">Ver servicios</a>
@@ -75,8 +73,8 @@
     <div class="service-grid">
       <article *ngFor="let service of services">
         <span class="service-icon">+</span>
-        <h3>{{ service }}</h3>
-        <p>Atencion con protocolos clinicos, tecnologia actual y seguimiento cercano.</p>
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.description }}</p>
       </article>
     </div>
   </section>
@@ -188,12 +186,79 @@
           ></textarea>
         </label>
 
-        <button class="primary-button whatsapp-button" type="submit" [disabled]="appointmentForm.invalid">
-          Abrir WhatsApp
+        <button
+          class="primary-button whatsapp-button"
+          type="submit"
+          [disabled]="appointmentForm.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? 'Registrando...' : 'Abrir WhatsApp' }}
         </button>
+
+        <p class="form-status" *ngIf="formMessage">{{ formMessage }}</p>
       </form>
 
-      <p class="contact-note">WhatsApp: 9400-0741</p>
+      <p class="contact-note">
+        WhatsApp: {{ siteConfig.displayPhone }}<br />
+        {{ siteConfig.address }}<br />
+        {{ siteConfig.schedule }}
+      </p>
     </div>
+  </section>
+  </ng-container>
+
+  <section id="doctor" class="doctor-panel" *ngIf="showDoctorModule">
+    <div class="doctor-header">
+      <div>
+        <p class="eyebrow">Modulo medico</p>
+        <h2>Citas pendientes</h2>
+        <p>Consulta las solicitudes registradas y marca cada cita cuando sea atendida.</p>
+      </div>
+
+      <button class="secondary-button refresh-button" type="button" (click)="loadPendingAppointments()">
+        {{ isLoadingAppointments ? 'Cargando...' : 'Actualizar' }}
+      </button>
+    </div>
+
+    <p class="doctor-status">{{ doctorMessage }}</p>
+
+    <div class="appointments-grid" *ngIf="doctorAppointments.length; else emptyAppointments">
+      <article class="appointment-card" *ngFor="let item of doctorAppointments">
+        <div class="appointment-card-header">
+          <div>
+            <h3>{{ item.patientName }}</h3>
+            <span>{{ item.consultationType }}</span>
+          </div>
+          <strong>{{ item.preferredSchedule || 'Sin horario' }}</strong>
+        </div>
+
+        <dl>
+          <div>
+            <dt>Edad</dt>
+            <dd>{{ item.age }}</dd>
+          </div>
+          <div>
+            <dt>Telefono</dt>
+            <dd>{{ item.phone || 'No indicado' }}</dd>
+          </div>
+          <div>
+            <dt>Registro</dt>
+            <dd>{{ item.createdAt }}</dd>
+          </div>
+        </dl>
+
+        <p class="appointment-notes">{{ item.notes || 'Sin detalle adicional.' }}</p>
+
+        <button class="primary-button attended-button" type="button" (click)="markAppointmentAttended(item)">
+          Marcar atendida
+        </button>
+      </article>
+    </div>
+
+    <ng-template #emptyAppointments>
+      <div class="empty-appointments">
+        <h3>Sin citas pendientes</h3>
+        <p>Cuando existan registros con Atendido en "No", apareceran aqui.</p>
+      </div>
+    </ng-template>
   </section>
 </main>
