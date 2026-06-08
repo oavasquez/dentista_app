@@ -1,0 +1,230 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
+release/builder-debug.yml
+release/builder-effective-config.yaml
+release/Paco Web Frontend Setup 0.0.0.exe
+release/Paco Web Frontend Setup 0.0.0.exe.blockmap
+release/Paco Web Frontend-0.0.0.dmg
+release/Paco Web Frontend-0.0.0.dmg.blockmap
+release/mac/Paco Web Frontend.app/Contents/Info.plist
+release/mac/Paco Web Frontend.app/Contents/PkgInfo
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Electron Framework
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Helpers
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Libraries
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Resources
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/Current
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libEGL.dylib
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libGLESv2.dylib
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/vk_swiftshader_icd.json
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/chrome_100_percent.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/chrome_200_percent.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/icudtl.dat
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/MainMenu.nib
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/resources.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/v8_context_snapshot.x86_64.bin
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/af.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/am.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ar.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/bg.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/bn.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ca.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/cs.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/da.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/de.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/el.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/en.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/en_GB.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/es.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/es_419.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/et.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/fa.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/fi.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/fil.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/fr.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/gu.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/he.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/hi.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/hr.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/hu.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/id.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/it.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ja.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/kn.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ko.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/lt.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/lv.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ml.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/mr.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ms.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/nb.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/nl.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/pl.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/pt_BR.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/pt_PT.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ro.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ru.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/sk.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/sl.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/sr.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/sv.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/sw.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ta.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/te.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/th.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/tr.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/uk.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/ur.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/vi.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/zh_CN.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/zh_TW.lproj/locale.pak
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Mantle.framework/Mantle
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Mantle.framework/Resources
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Mantle.framework/Versions/Current
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Mantle.framework/Versions/A/Mantle
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Mantle.framework/Versions/A/Resources/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (GPU).app/Contents/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (GPU).app/Contents/PkgInfo
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (GPU).app/Contents/MacOS/Paco Web Frontend Helper (GPU)
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (Plugin).app/Contents/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (Plugin).app/Contents/PkgInfo
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (Plugin).app/Contents/MacOS/Paco Web Frontend Helper (Plugin)
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (Renderer).app/Contents/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (Renderer).app/Contents/PkgInfo
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper (Renderer).app/Contents/MacOS/Paco Web Frontend Helper (Renderer)
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper.app/Contents/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper.app/Contents/PkgInfo
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Paco Web Frontend Helper.app/Contents/MacOS/Paco Web Frontend Helper
+release/mac/Paco Web Frontend.app/Contents/Frameworks/ReactiveObjC.framework/ReactiveObjC
+release/mac/Paco Web Frontend.app/Contents/Frameworks/ReactiveObjC.framework/Resources
+release/mac/Paco Web Frontend.app/Contents/Frameworks/ReactiveObjC.framework/Versions/Current
+release/mac/Paco Web Frontend.app/Contents/Frameworks/ReactiveObjC.framework/Versions/A/ReactiveObjC
+release/mac/Paco Web Frontend.app/Contents/Frameworks/ReactiveObjC.framework/Versions/A/Resources/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Squirrel.framework/Resources
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Squirrel.framework/Squirrel
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Squirrel.framework/Versions/Current
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Squirrel.framework/Versions/A/Squirrel
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Squirrel.framework/Versions/A/Resources/Info.plist
+release/mac/Paco Web Frontend.app/Contents/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt
+release/mac/Paco Web Frontend.app/Contents/MacOS/Paco Web Frontend
+release/mac/Paco Web Frontend.app/Contents/Resources/app.asar
+release/mac/Paco Web Frontend.app/Contents/Resources/electron.icns
+release/mac/Paco Web Frontend.app/Contents/Resources/offline/offline-seed.json
+release/win-unpacked/chrome_100_percent.pak
+release/win-unpacked/chrome_200_percent.pak
+release/win-unpacked/d3dcompiler_47.dll
+release/win-unpacked/ffmpeg.dll
+release/win-unpacked/icudtl.dat
+release/win-unpacked/libEGL.dll
+release/win-unpacked/libGLESv2.dll
+release/win-unpacked/LICENSE.electron.txt
+release/win-unpacked/LICENSES.chromium.html
+release/win-unpacked/Paco Web Frontend.exe
+release/win-unpacked/resources.pak
+release/win-unpacked/snapshot_blob.bin
+release/win-unpacked/v8_context_snapshot.bin
+release/win-unpacked/vk_swiftshader_icd.json
+release/win-unpacked/vk_swiftshader.dll
+release/win-unpacked/vulkan-1.dll
+release/win-unpacked/locales/af.pak
+release/win-unpacked/locales/am.pak
+release/win-unpacked/locales/ar.pak
+release/win-unpacked/locales/bg.pak
+release/win-unpacked/locales/bn.pak
+release/win-unpacked/locales/ca.pak
+release/win-unpacked/locales/cs.pak
+release/win-unpacked/locales/da.pak
+release/win-unpacked/locales/de.pak
+release/win-unpacked/locales/el.pak
+release/win-unpacked/locales/en-GB.pak
+release/win-unpacked/locales/en-US.pak
+release/win-unpacked/locales/es-419.pak
+release/win-unpacked/locales/es.pak
+release/win-unpacked/locales/et.pak
+release/win-unpacked/locales/fa.pak
+release/win-unpacked/locales/fi.pak
+release/win-unpacked/locales/fil.pak
+release/win-unpacked/locales/fr.pak
+release/win-unpacked/locales/gu.pak
+release/win-unpacked/locales/he.pak
+release/win-unpacked/locales/hi.pak
+release/win-unpacked/locales/hr.pak
+release/win-unpacked/locales/hu.pak
+release/win-unpacked/locales/id.pak
+release/win-unpacked/locales/it.pak
+release/win-unpacked/locales/ja.pak
+release/win-unpacked/locales/kn.pak
+release/win-unpacked/locales/ko.pak
+release/win-unpacked/locales/lt.pak
+release/win-unpacked/locales/lv.pak
+release/win-unpacked/locales/ml.pak
+release/win-unpacked/locales/mr.pak
+release/win-unpacked/locales/ms.pak
+release/win-unpacked/locales/nb.pak
+release/win-unpacked/locales/nl.pak
+release/win-unpacked/locales/pl.pak
+release/win-unpacked/locales/pt-BR.pak
+release/win-unpacked/locales/pt-PT.pak
+release/win-unpacked/locales/ro.pak
+release/win-unpacked/locales/ru.pak
+release/win-unpacked/locales/sk.pak
+release/win-unpacked/locales/sl.pak
+release/win-unpacked/locales/sr.pak
+release/win-unpacked/locales/sv.pak
+release/win-unpacked/locales/sw.pak
+release/win-unpacked/locales/ta.pak
+release/win-unpacked/locales/te.pak
+release/win-unpacked/locales/th.pak
+release/win-unpacked/locales/tr.pak
+release/win-unpacked/locales/uk.pak
+release/win-unpacked/locales/ur.pak
+release/win-unpacked/locales/vi.pak
+release/win-unpacked/locales/zh-CN.pak
+release/win-unpacked/locales/zh-TW.pak
+release/win-unpacked/resources/app.asar
+release/win-unpacked/resources/elevate.exe
+release/win-unpacked/resources/offline/offline-seed.json

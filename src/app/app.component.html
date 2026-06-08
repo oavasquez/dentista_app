@@ -1,0 +1,127 @@
+<main class="site-shell">
+  <nav class="topbar" aria-label="Navegacion principal">
+    <a class="brand" href="#inicio" aria-label="Clinica Den">
+      <span class="brand-mark">D</span>
+      <span>
+        <strong>Clinica Den</strong>
+        <small>Salud dental integral</small>
+      </span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#equipo">Equipo</a>
+      <a href="#opiniones">Opiniones</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+
+    <a class="nav-cta" href="#contacto">Reservar cita</a>
+  </nav>
+
+  <section id="inicio" class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Odontologia moderna en un entorno seguro</p>
+      <h1>Donde tu sonrisa vuelve a sentirse natural.</h1>
+      <p class="hero-text">
+        Diagnostico digital, tratamientos preventivos y especialistas para cada etapa de tu
+        cuidado dental.
+      </p>
+      <div class="hero-actions">
+        <a class="primary-button" href="#contacto">Agendar evaluacion</a>
+        <a class="secondary-button" href="#servicios">Ver servicios</a>
+      </div>
+    </div>
+
+    <figure class="hero-media" aria-label="Consulta dental moderna">
+      <img src="assets/images/dental/clinica-hero.png" alt="Dentista atendiendo a una paciente en clinica moderna" />
+      <figcaption>
+        <strong>Atencion personalizada</strong>
+        <span>Plan clinico claro desde la primera consulta.</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="stats" aria-label="Indicadores de la clinica">
+    <article *ngFor="let stat of stats">
+      <strong>{{ stat.value }}</strong>
+      <span>{{ stat.label }}</span>
+    </article>
+  </section>
+
+  <section class="philosophy">
+    <div>
+      <p class="eyebrow">Nuestra filosofia</p>
+      <h2>Una experiencia dental clara, humana y bien organizada.</h2>
+    </div>
+
+    <div class="timeline">
+      <article *ngFor="let step of steps; let i = index">
+        <span>{{ i + 1 }}</span>
+        <h3>{{ step }}</h3>
+        <p>
+          Explicamos cada decision con lenguaje simple para que puedas elegir tu tratamiento
+          con confianza.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section id="servicios" class="services">
+    <div class="section-heading">
+      <p class="eyebrow">Especialidades</p>
+      <h2>Servicios dentales para prevenir, tratar y recuperar tu sonrisa.</h2>
+    </div>
+
+    <div class="service-grid">
+      <article *ngFor="let service of services">
+        <span class="service-icon">+</span>
+        <h3>{{ service }}</h3>
+        <p>Atencion con protocolos clinicos, tecnologia actual y seguimiento cercano.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="equipo" class="team-section">
+    <div class="section-heading">
+      <p class="eyebrow">Dentistas</p>
+      <h2>Especialistas coordinados para un plan completo.</h2>
+    </div>
+
+    <div class="team-grid">
+      <article *ngFor="let doctor of doctors">
+        <div class="avatar">{{ doctor.name.charAt(0) }}</div>
+        <h3>{{ doctor.name }}</h3>
+        <p>{{ doctor.role }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="opiniones" class="testimonial">
+    <div>
+      <p class="eyebrow">Pacientes</p>
+      <h2>Lo que dicen quienes ya confiaron en Clinica Den.</h2>
+    </div>
+    <blockquote>
+      "Me explicaron cada paso del tratamiento y el resultado fue muy natural. La atencion fue
+      puntual, limpia y tranquila desde la primera cita."
+      <cite>Judy Nunez, paciente de ortodoncia</cite>
+    </blockquote>
+  </section>
+
+  <section class="content-band">
+    <div class="article-panel">
+      <p class="eyebrow">Ultimos articulos</p>
+      <h2>Consejos para mantener una sonrisa saludable.</h2>
+      <div class="article-list">
+        <a *ngFor="let article of articles" href="#contacto">{{ article }}</a>
+      </div>
+    </div>
+
+    <div id="contacto" class="contact-panel">
+      <p class="eyebrow">Agenda tu cita</p>
+      <h2>Te ayudamos con tus dudas dentales.</h2>
+      <p>Col. Medica, Tegucigalpa<br />Lunes a sabado: 8:00 am - 6:00 pm</p>
+      <a class="primary-button" href="tel:+50422223333">Llamar: +504 2222-3333</a>
+    </div>
+  </section>
+</main>
