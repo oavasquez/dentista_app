@@ -119,9 +119,81 @@
 
     <div id="contacto" class="contact-panel">
       <p class="eyebrow">Agenda tu cita</p>
-      <h2>Te ayudamos con tus dudas dentales.</h2>
-      <p>Col. Medica, Tegucigalpa<br />Lunes a sabado: 8:00 am - 6:00 pm</p>
-      <a class="primary-button" href="tel:+50422223333">Llamar: +504 2222-3333</a>
+      <h2>Envia tus datos por WhatsApp.</h2>
+      <p>
+        Completa el formulario y se abrira WhatsApp con el mensaje listo para agendar tu cita.
+      </p>
+
+      <form class="appointment-form" #appointmentForm="ngForm" (ngSubmit)="openWhatsappAppointment()">
+        <label>
+          Nombre del paciente
+          <input
+            type="text"
+            name="patientName"
+            required
+            placeholder="Ej. Maria Lopez"
+            [(ngModel)]="appointment.patientName"
+          />
+        </label>
+
+        <div class="form-row">
+          <label>
+            Edad
+            <input
+              type="number"
+              name="age"
+              required
+              min="1"
+              max="120"
+              placeholder="Ej. 28"
+              [(ngModel)]="appointment.age"
+            />
+          </label>
+
+          <label>
+            Telefono
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Ej. 9999-9999"
+              [(ngModel)]="appointment.phone"
+            />
+          </label>
+        </div>
+
+        <label>
+          Tipo de consulta
+          <select name="consultationType" required [(ngModel)]="appointment.consultationType">
+            <option *ngFor="let type of consultationTypes" [value]="type">{{ type }}</option>
+          </select>
+        </label>
+
+        <label>
+          Horario preferido
+          <input
+            type="text"
+            name="preferredSchedule"
+            placeholder="Ej. lunes por la tarde"
+            [(ngModel)]="appointment.preferredSchedule"
+          />
+        </label>
+
+        <label>
+          Cuales son sus consultas
+          <textarea
+            name="notes"
+            rows="4"
+            placeholder="Describe dolor, molestia, tratamiento deseado o dudas."
+            [(ngModel)]="appointment.notes"
+          ></textarea>
+        </label>
+
+        <button class="primary-button whatsapp-button" type="submit" [disabled]="appointmentForm.invalid">
+          Abrir WhatsApp
+        </button>
+      </form>
+
+      <p class="contact-note">WhatsApp: 9400-0741</p>
     </div>
   </section>
 </main>

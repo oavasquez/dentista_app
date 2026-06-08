@@ -1,5 +1,14 @@
 import { Component } from '@angular/core';
 
+interface AppointmentForm {
+  patientName: string;
+  age: string;
+  phone: string;
+  consultationType: string;
+  preferredSchedule: string;
+  notes: string;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -7,6 +16,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   readonly title = 'Clinica Den';
+  readonly whatsappNumber = '50494000741';
 
   readonly stats = [
     { value: '98%', label: 'satisfaccion' },
@@ -42,4 +52,39 @@ export class AppComponent {
     'Senales tempranas de caries que no debes ignorar',
     'Beneficios de una limpieza dental profesional',
   ];
+
+  readonly consultationTypes = [
+    'Evaluacion general',
+    'Limpieza dental',
+    'Dolor o emergencia',
+    'Ortodoncia',
+    'Blanqueamiento',
+    'Implantes',
+    'Consulta infantil',
+  ];
+
+  appointment: AppointmentForm = {
+    patientName: '',
+    age: '',
+    phone: '',
+    consultationType: 'Evaluacion general',
+    preferredSchedule: '',
+    notes: '',
+  };
+
+  openWhatsappAppointment(): void {
+    const message = [
+      'Hola Clinica Den, quiero agendar una cita.',
+      '',
+      `Nombre del paciente: ${this.appointment.patientName.trim()}`,
+      `Edad: ${this.appointment.age.trim()}`,
+      `Telefono de contacto: ${this.appointment.phone.trim() || 'No indicado'}`,
+      `Tipo de consulta: ${this.appointment.consultationType}`,
+      `Horario preferido: ${this.appointment.preferredSchedule.trim() || 'No indicado'}`,
+      `Detalle de la consulta: ${this.appointment.notes.trim() || 'No indicado'}`,
+    ].join('\n');
+
+    const whatsappUrl = `https://wa.me/${this.whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener');
+  }
 }
