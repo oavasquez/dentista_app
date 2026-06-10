@@ -17,10 +17,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'Clinica Den'`, () => {
+  it(`should have as title 'Clinica dental Fuentes'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Clinica Den');
+    expect(app.title).toEqual('Clinica dental Fuentes');
   });
 
   it('should render the dental landing hero', () => {

@@ -46,7 +46,7 @@ interface ServiceItem {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  readonly title = 'Clinica Den';
+  readonly title = 'Clinica dental Fuentes';
   readonly sheetEndpoint =
     'https://script.google.com/macros/s/AKfycbzws-oG3J33vg6Py_9X06Kw_Gcspl4XjTLxP0r1JKs_6N_lXyhfqBUslYtK3I0R_cRMhw/exec';
   isSubmitting = false;
@@ -56,8 +56,8 @@ export class AppComponent implements OnInit {
   doctorMessage = '';
   showDoctorModule = false;
   siteConfig: SiteConfig = {
-    clinicName: 'Clinica Den',
-    clinicSubtitle: 'Salud dental integral',
+    clinicName: 'Clinica dental Fuentes',
+    clinicSubtitle: 'Clinica dental',
     whatsappNumber: '50494000741',
     displayPhone: '9400-0741',
     address: 'Col. Medica, Tegucigalpa',

@@ -47,31 +47,15 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-width: 178px;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
-.brand-mark {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border-radius: 50%;
-  color: #ffffff;
-  font-weight: 800;
-  background: linear-gradient(135deg, #ff8b2b, #0b74d1);
-}
-
-.brand strong,
-.brand small {
-  display: block;
-  line-height: 1.1;
-}
-
-.brand small {
-  margin-top: 3px;
-  color: #5d7290;
-  font-size: 0.72rem;
+.brand-logo {
+  width: clamp(142px, 17vw, 210px);
+  height: 52px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .nav-links {
@@ -717,6 +701,11 @@ cite {
     min-width: 116px;
     padding: 0 14px;
     font-size: 0.82rem;
+  }
+
+  .brand-logo {
+    width: 132px;
+    height: 46px;
   }
 
   .hero-copy h1 {

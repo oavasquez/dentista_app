@@ -33,7 +33,7 @@ function doGet(e) {
 
     return jsonResponse({
       ok: true,
-      message: 'Clinica Den appointment endpoint',
+      message: 'Clinica dental Fuentes appointment endpoint',
     });
   } catch (error) {
     return jsonResponse({

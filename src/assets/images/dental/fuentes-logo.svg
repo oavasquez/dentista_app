@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-labelledby="title desc">
+  <title id="title">Fuentes Clinica Dental</title>
+  <desc id="desc">Logotipo de Fuentes Clinica Dental con trazo de diente azul y acento verde.</desc>
+  <rect width="900" height="360" fill="#ffffff"/>
+  <path
+    d="M574 98c54 42 111 29 155-26 30-38 76-53 106-23 38 38 39 148-25 260-26-88-112-98-199-42-92 59-191 64-266 10"
+    fill="none"
+    stroke="#2d70b8"
+    stroke-width="31"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M340 88c41-77 101-29 144 9 43 38 92 46 143 34-73 35-128 16-178-31-44-40-83-48-109-12z"
+    fill="#a9ed00"
+  />
+  <path
+    d="M246 281c111 60 195 4 279-40 62-33 120-44 181 7-70-91-153-61-232-16-86 49-143 75-228 49z"
+    fill="#082766"
+  />
+  <text
+    x="72"
+    y="205"
+    fill="#081f5b"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="128"
+    font-weight="500"
+    letter-spacing="2"
+  >
+    FUENTES
+  </text>
+  <text
+    x="80"
+    y="278"
+    fill="#a9ed00"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="48"
+    font-weight="800"
+    letter-spacing="3"
+  >
+    CLINICA DENTAL
+  </text>
+</svg>
