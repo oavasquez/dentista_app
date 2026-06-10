@@ -162,7 +162,12 @@
 
   <section id="doctor" class="doctor-panel" *ngIf="showDoctorModule">
     <nav class="doctor-topbar" aria-label="Navegacion del modulo medico">
-      <a class="brand" href="#doctor-citas" [attr.aria-label]="siteConfig.clinicName">
+      <a
+        class="brand"
+        [href]="showDoctorAppointmentsOnly ? '#/citas-doctor' : '#/doctor'"
+        (click)="!showDoctorAppointmentsOnly && scrollToDoctorSection('doctor-config', $event)"
+        [attr.aria-label]="siteConfig.clinicName"
+      >
         <img
           class="brand-logo"
           src="assets/images/dental/fuentes-logo.svg"
@@ -170,13 +175,22 @@
         />
       </a>
 
-      <div class="doctor-nav-links">
-        <a href="#doctor-citas">Citas</a>
-        <a href="#doctor-config">Configuracion</a>
-        <a href="#doctor-bloqueos">Bloqueos</a>
+      <div class="doctor-nav-links" *ngIf="!showDoctorAppointmentsOnly">
+        <button type="button" (click)="scrollToDoctorSection('doctor-config')">Configuracion</button>
+        <button type="button" (click)="scrollToDoctorSection('doctor-bloqueos')">Bloqueos</button>
+        <a href="#/citas-doctor">Solo citas</a>
       </div>
 
-      <button class="nav-cta doctor-refresh" type="button" (click)="loadPendingAppointments()">
+      <div class="doctor-nav-links" *ngIf="showDoctorAppointmentsOnly">
+        <button type="button" (click)="scrollToDoctorSection('doctor-citas')">Citas</button>
+      </div>
+
+      <button
+        class="nav-cta doctor-refresh"
+        type="button"
+        *ngIf="showDoctorAppointmentsOnly"
+        (click)="loadPendingAppointments()"
+      >
         {{ isLoadingAppointments ? 'Cargando...' : 'Actualizar' }}
       </button>
 
@@ -185,11 +199,17 @@
       </button>
     </nav>
 
-    <div id="doctor-citas" class="doctor-header">
+    <div id="doctor-citas" class="doctor-header" *ngIf="showDoctorAppointmentsOnly">
       <div>
         <p class="eyebrow">Modulo medico</p>
         <h2>Citas pendientes</h2>
-        <p>Consulta las solicitudes registradas y marca cada cita cuando sea atendida.</p>
+        <p>
+          {{
+            showDoctorAppointmentsOnly
+              ? 'Pagina dedicada para revisar, reprogramar y dar seguimiento a las citas.'
+              : 'Consulta las solicitudes registradas y marca cada cita cuando sea atendida.'
+          }}
+        </p>
       </div>
 
       <button class="secondary-button refresh-button" type="button" (click)="loadPendingAppointments()">
@@ -197,7 +217,7 @@
       </button>
     </div>
 
-    <section class="filter-panel" aria-label="Filtros de citas">
+    <section class="filter-panel" aria-label="Filtros de citas" *ngIf="showDoctorAppointmentsOnly">
       <div class="filter-tabs">
         <button
           type="button"
@@ -255,114 +275,116 @@
       </div>
     </section>
 
-    <p class="doctor-status">{{ doctorMessage }}</p>
-    <p class="doctor-status">
+    <p class="doctor-status" *ngIf="showDoctorAppointmentsOnly">{{ doctorMessage }}</p>
+    <p class="doctor-status" *ngIf="showDoctorAppointmentsOnly">
       {{ filteredDoctorAppointments.length }} cita(s) mostrada(s) de {{ doctorAppointments.length }} pendiente(s).
     </p>
 
-    <div class="appointments-grid" *ngIf="filteredDoctorAppointments.length; else emptyAppointments">
-      <article class="appointment-card" *ngFor="let item of filteredDoctorAppointments">
-        <div class="appointment-card-header">
-          <div>
-            <h3>{{ item.patientName }}</h3>
-            <span>{{ item.consultationType }}</span>
+    <ng-container *ngIf="showDoctorAppointmentsOnly">
+      <div class="appointments-grid" *ngIf="filteredDoctorAppointments.length; else emptyAppointments">
+        <article class="appointment-card" *ngFor="let item of filteredDoctorAppointments">
+          <div class="appointment-card-header">
+            <div>
+              <h3>{{ item.patientName }}</h3>
+              <span>{{ item.consultationType }}</span>
+            </div>
+            <strong>{{ formatAppointmentSchedule(item) }}</strong>
           </div>
-          <strong>{{ formatAppointmentSchedule(item) }}</strong>
-        </div>
 
-        <dl>
-          <div>
-            <dt>Edad</dt>
-            <dd>{{ item.age }}</dd>
-          </div>
-          <div>
-            <dt>Telefono</dt>
-            <dd>{{ item.phone || 'No indicado' }}</dd>
-          </div>
-          <div>
-            <dt>Registro</dt>
-            <dd>{{ formatDateTimeDisplay(item.createdAt) }}</dd>
-          </div>
-        </dl>
+          <dl>
+            <div>
+              <dt>Edad</dt>
+              <dd>{{ item.age }}</dd>
+            </div>
+            <div>
+              <dt>Telefono</dt>
+              <dd>{{ item.phone || 'No indicado' }}</dd>
+            </div>
+            <div>
+              <dt>Registro</dt>
+              <dd>{{ formatDateTimeDisplay(item.createdAt) }}</dd>
+            </div>
+          </dl>
 
-        <p class="appointment-notes">{{ item.notes || 'Sin detalle adicional.' }}</p>
+          <p class="appointment-notes">{{ item.notes || 'Sin detalle adicional.' }}</p>
 
-        <div class="reschedule-row">
-          <label>
-            Nueva fecha
-            <input
-              type="date"
-              [(ngModel)]="item.appointmentDate"
-              [ngModelOptions]="{ standalone: true }"
-              (change)="loadRescheduleAvailability(item, true)"
-            />
-          </label>
-          <label>
-            Nueva hora
-            <select
-              [(ngModel)]="item.appointmentTime"
-              [ngModelOptions]="{ standalone: true }"
-              [disabled]="!item.appointmentDate"
-              (click)="loadRescheduleAvailability(item)"
-            >
-              <option value="">Selecciona hora</option>
-              <option *ngIf="loadingRescheduleSlots[item.rowNumber]" value="" disabled>
-                Consultando cupos...
-              </option>
-              <option
-                *ngIf="
-                  item.appointmentTime &&
-                  !(rescheduleSlots[item.rowNumber] || []).length
-                "
-                [value]="item.appointmentTime"
+          <div class="reschedule-row">
+            <label>
+              Nueva fecha
+              <input
+                type="date"
+                [(ngModel)]="item.appointmentDate"
+                [ngModelOptions]="{ standalone: true }"
+                (change)="loadRescheduleAvailability(item, true)"
+              />
+            </label>
+            <label>
+              Nueva hora
+              <select
+                [(ngModel)]="item.appointmentTime"
+                [ngModelOptions]="{ standalone: true }"
+                [disabled]="!item.appointmentDate"
+                (click)="loadRescheduleAvailability(item)"
               >
-                {{ formatTimeDisplay(item.appointmentTime) }}
-              </option>
-              <option *ngFor="let slot of rescheduleSlots[item.rowNumber] || []" [value]="slot.time">
-                {{ formatTimeDisplay(slot.time) }} - {{ slot.available }} cupo(s)
-              </option>
-            </select>
-          </label>
-          <button class="secondary-button reschedule-button" type="button" (click)="rescheduleAppointment(item)">
-            Reprogramar
-          </button>
-        </div>
-        <p class="reschedule-status" *ngIf="rescheduleMessages[item.rowNumber]">
-          {{ rescheduleMessages[item.rowNumber] }}
-        </p>
+                <option value="">Selecciona hora</option>
+                <option *ngIf="loadingRescheduleSlots[item.rowNumber]" value="" disabled>
+                  Consultando cupos...
+                </option>
+                <option
+                  *ngIf="
+                    item.appointmentTime &&
+                    !(rescheduleSlots[item.rowNumber] || []).length
+                  "
+                  [value]="item.appointmentTime"
+                >
+                  {{ formatTimeDisplay(item.appointmentTime) }}
+                </option>
+                <option *ngFor="let slot of rescheduleSlots[item.rowNumber] || []" [value]="slot.time">
+                  {{ formatTimeDisplay(slot.time) }} - {{ slot.available }} cupo(s)
+                </option>
+              </select>
+            </label>
+            <button class="secondary-button reschedule-button" type="button" (click)="rescheduleAppointment(item)">
+              Reprogramar
+            </button>
+          </div>
+          <p class="reschedule-status" *ngIf="rescheduleMessages[item.rowNumber]">
+            {{ rescheduleMessages[item.rowNumber] }}
+          </p>
 
-        <div class="appointment-actions">
-          <button
-            class="secondary-button reminder-button"
-            type="button"
-            (click)="sendAppointmentReminder(item)"
-          >
-            {{ isReminderSent(item) ? 'Enviar nuevamente' : 'Enviar recordatorio' }}
-          </button>
+          <div class="appointment-actions">
+            <button
+              class="secondary-button reminder-button"
+              type="button"
+              (click)="sendAppointmentReminder(item)"
+            >
+              {{ isReminderSent(item) ? 'Enviar nuevamente' : 'Enviar recordatorio' }}
+            </button>
 
-          <button
-            class="secondary-button schedule-again-button"
-            type="button"
-            (click)="scheduleAppointmentAgain(item)"
-          >
-            Agendar nuevamente
-          </button>
+            <button
+              class="secondary-button schedule-again-button"
+              type="button"
+              (click)="scheduleAppointmentAgain(item)"
+            >
+              Agendar nuevamente
+            </button>
 
-          <button class="primary-button attended-button" type="button" (click)="markAppointmentAttended(item)">
-            Marcar atendida
-          </button>
-        </div>
-      </article>
-    </div>
-
-    <ng-template #emptyAppointments>
-      <div class="empty-appointments">
-        <h3>Sin citas pendientes</h3>
-        <p>No hay citas pendientes para el filtro seleccionado.</p>
+            <button class="primary-button attended-button" type="button" (click)="markAppointmentAttended(item)">
+              Marcar atendida
+            </button>
+          </div>
+        </article>
       </div>
-    </ng-template>
 
-    <section id="doctor-config" class="settings-panel">
+      <ng-template #emptyAppointments>
+        <div class="empty-appointments">
+          <h3>Sin citas pendientes</h3>
+          <p>No hay citas pendientes para el filtro seleccionado.</p>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <section id="doctor-config" class="settings-panel" *ngIf="!showDoctorAppointmentsOnly">
       <div>
         <p class="eyebrow">Configuracion</p>
         <h3>Datos de la clinica y equipo</h3>
@@ -528,7 +550,7 @@
       <p class="doctor-status" *ngIf="settingsMessage">{{ settingsMessage }}</p>
     </section>
 
-    <section id="doctor-bloqueos" class="schedule-panel">
+    <section id="doctor-bloqueos" class="schedule-panel" *ngIf="!showDoctorAppointmentsOnly">
       <div>
         <p class="eyebrow">No disponible</p>
         <h3>Bloquear dia u hora</h3>

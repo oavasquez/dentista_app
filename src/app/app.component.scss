@@ -633,12 +633,20 @@ cite {
   font-weight: 800;
 }
 
-.doctor-nav-links a {
+.doctor-nav-links a,
+.doctor-nav-links button {
   padding: 10px 12px;
+  border: 0;
   border-radius: 999px;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  background: transparent;
+  cursor: pointer;
 }
 
-.doctor-nav-links a:hover {
+.doctor-nav-links a:hover,
+.doctor-nav-links button:hover {
   background: #eef5ff;
 }
 

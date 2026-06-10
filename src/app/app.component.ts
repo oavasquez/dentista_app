@@ -112,6 +112,7 @@ export class AppComponent implements OnInit {
   showDoctorModule = false;
   showDoctorLogin = false;
   showAppointmentOnly = false;
+  showDoctorAppointmentsOnly = false;
   doctorPassword = '';
   doctorLoginMessage = '';
   minAppointmentDate = '';
@@ -533,10 +534,12 @@ export class AppComponent implements OnInit {
   private resolveViewMode(): void {
     const accessKey = new URLSearchParams(window.location.search).get('access');
     const route = window.location.hash.replace(/^#\/?/, '').split('?')[0];
-    const wantsDoctorAccess = Boolean(accessKey) || route === 'doctor';
+    const wantsDoctorAccess =
+      Boolean(accessKey) || route === 'doctor' || route === 'citas-doctor' || route === 'doctor-citas';
     const savedDoctorAccess = sessionStorage.getItem('doctorAccessGranted') === 'true';
     this.showDoctorModule = wantsDoctorAccess && savedDoctorAccess;
     this.showDoctorLogin = wantsDoctorAccess && !this.showDoctorModule;
+    this.showDoctorAppointmentsOnly = this.showDoctorModule && route === 'citas-doctor';
     this.showAppointmentOnly =
       !this.showDoctorModule && !this.showDoctorLogin && (route === 'cita' || route === 'agendar');
     this.isViewReady = true;
@@ -549,6 +552,7 @@ export class AppComponent implements OnInit {
 
     if (!this.showDoctorModule) {
       this.hasLoadedDoctorModuleData = false;
+      this.showDoctorAppointmentsOnly = false;
     }
   }
 
@@ -568,6 +572,8 @@ export class AppComponent implements OnInit {
     this.doctorLoginMessage = '';
     this.showDoctorLogin = false;
     this.showDoctorModule = true;
+    this.showDoctorAppointmentsOnly =
+      window.location.hash.replace(/^#\/?/, '').split('?')[0] === 'citas-doctor';
 
     if (!window.location.hash.includes('doctor')) {
       window.location.hash = 'doctor';
@@ -584,9 +590,15 @@ export class AppComponent implements OnInit {
     sessionStorage.removeItem('doctorAccessGranted');
     this.showDoctorModule = false;
     this.showDoctorLogin = true;
+    this.showDoctorAppointmentsOnly = false;
     this.hasLoadedDoctorModuleData = false;
     this.doctorAppointments = [];
     this.activeBlocks = [];
+  }
+
+  scrollToDoctorSection(sectionId: string, event?: Event): void {
+    event?.preventDefault();
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   loadPendingAppointments(): void {
