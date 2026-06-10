@@ -1,5 +1,5 @@
-<main class="site-shell">
-  <ng-container *ngIf="!showDoctorModule">
+<main class="site-shell" *ngIf="isViewReady">
+  <ng-container *ngIf="!showDoctorModule && !showDoctorLogin && !showAppointmentOnly">
   <nav class="topbar" aria-label="Navegacion principal">
     <a class="brand" href="#inicio" [attr.aria-label]="siteConfig.clinicName">
       <img
@@ -115,6 +115,321 @@
       </div>
     </div>
 
+    <ng-container *ngTemplateOutlet="appointmentFormPanel"></ng-container>
+  </section>
+  </ng-container>
+
+  <section class="appointment-only" *ngIf="showAppointmentOnly">
+    <a class="appointment-only-brand" href="#inicio" [attr.aria-label]="siteConfig.clinicName">
+      <img
+        class="brand-logo"
+        src="assets/images/dental/fuentes-logo.svg"
+        [alt]="siteConfig.clinicName"
+      />
+    </a>
+
+    <ng-container *ngTemplateOutlet="appointmentFormPanel"></ng-container>
+  </section>
+
+  <section class="doctor-login" *ngIf="showDoctorLogin">
+    <a class="appointment-only-brand" href="#inicio" [attr.aria-label]="siteConfig.clinicName">
+      <img
+        class="brand-logo"
+        src="assets/images/dental/fuentes-logo.svg"
+        [alt]="siteConfig.clinicName"
+      />
+    </a>
+
+    <form class="doctor-login-card" (ngSubmit)="unlockDoctorModule()">
+      <p class="eyebrow">Acceso medico</p>
+      <h2>Ingresar al modulo de citas</h2>
+      <p>Escribe la contrasena para revisar citas, bloqueos y recordatorios.</p>
+
+      <label>
+        Contrasena
+        <input
+          type="password"
+          name="doctorPassword"
+          autocomplete="current-password"
+          [(ngModel)]="doctorPassword"
+        />
+      </label>
+
+      <button class="primary-button doctor-login-button" type="submit">Ingresar</button>
+      <p class="doctor-login-message" *ngIf="doctorLoginMessage">{{ doctorLoginMessage }}</p>
+    </form>
+  </section>
+
+  <section id="doctor" class="doctor-panel" *ngIf="showDoctorModule">
+    <nav class="doctor-topbar" aria-label="Navegacion del modulo medico">
+      <a class="brand" href="#doctor-citas" [attr.aria-label]="siteConfig.clinicName">
+        <img
+          class="brand-logo"
+          src="assets/images/dental/fuentes-logo.svg"
+          [alt]="siteConfig.clinicName"
+        />
+      </a>
+
+     
+
+      <button class="nav-cta doctor-refresh" type="button" (click)="loadPendingAppointments()">
+        {{ isLoadingAppointments ? 'Cargando...' : 'Actualizar' }}
+      </button>
+
+      <button class="secondary-button doctor-logout" type="button" (click)="lockDoctorModule()">
+        Salir
+      </button>
+    </nav>
+
+    <div id="doctor-citas" class="doctor-header">
+      <div>
+        <p class="eyebrow">Modulo medico</p>
+        <h2>Citas pendientes</h2>
+        <p>Consulta las solicitudes registradas y marca cada cita cuando sea atendida.</p>
+      </div>
+
+      <button class="secondary-button refresh-button" type="button" (click)="loadPendingAppointments()">
+        {{ isLoadingAppointments ? 'Cargando...' : 'Actualizar' }}
+      </button>
+    </div>
+
+    <section class="filter-panel" aria-label="Filtros de citas">
+      <div class="filter-tabs">
+        <button
+          type="button"
+          [class.active]="appointmentFilterMode === 'today'"
+          (click)="setAppointmentFilter('today')"
+        >
+          Hoy
+        </button>
+        <button
+          type="button"
+          [class.active]="appointmentFilterMode === 'tomorrow'"
+          (click)="setAppointmentFilter('tomorrow')"
+        >
+          Manana
+        </button>
+        <button
+          type="button"
+          [class.active]="appointmentFilterMode === 'date'"
+          (click)="setAppointmentFilter('date')"
+        >
+          Por fecha
+        </button>
+        <button
+          type="button"
+          [class.active]="appointmentFilterMode === 'range'"
+          (click)="setAppointmentFilter('range')"
+        >
+          Rango
+        </button>
+        <button
+          type="button"
+          [class.active]="appointmentFilterMode === 'all'"
+          (click)="setAppointmentFilter('all')"
+        >
+          Todas
+        </button>
+      </div>
+
+      <div class="filter-fields" *ngIf="appointmentFilterMode === 'date'">
+        <label>
+          Fecha
+          <input type="date" [(ngModel)]="appointmentFilterDate" [ngModelOptions]="{ standalone: true }" />
+        </label>
+      </div>
+
+      <div class="filter-fields" *ngIf="appointmentFilterMode === 'range'">
+        <label>
+          Desde
+          <input type="date" [(ngModel)]="appointmentFilterStartDate" [ngModelOptions]="{ standalone: true }" />
+        </label>
+        <label>
+          Hasta
+          <input type="date" [(ngModel)]="appointmentFilterEndDate" [ngModelOptions]="{ standalone: true }" />
+        </label>
+      </div>
+    </section>
+
+    <p class="doctor-status">{{ doctorMessage }}</p>
+    <p class="doctor-status">
+      {{ filteredDoctorAppointments.length }} cita(s) mostrada(s) de {{ doctorAppointments.length }} pendiente(s).
+    </p>
+
+    <div class="appointments-grid" *ngIf="filteredDoctorAppointments.length; else emptyAppointments">
+      <article class="appointment-card" *ngFor="let item of filteredDoctorAppointments">
+        <div class="appointment-card-header">
+          <div>
+            <h3>{{ item.patientName }}</h3>
+            <span>{{ item.consultationType }}</span>
+          </div>
+          <strong>{{ item.preferredSchedule || 'Sin horario' }}</strong>
+        </div>
+
+        <dl>
+          <div>
+            <dt>Edad</dt>
+            <dd>{{ item.age }}</dd>
+          </div>
+          <div>
+            <dt>Telefono</dt>
+            <dd>{{ item.phone || 'No indicado' }}</dd>
+          </div>
+          <div>
+            <dt>Registro</dt>
+            <dd>{{ item.createdAt }}</dd>
+          </div>
+        </dl>
+
+        <p class="appointment-notes">{{ item.notes || 'Sin detalle adicional.' }}</p>
+
+        <div class="reschedule-row">
+          <label>
+            Nueva fecha
+            <input
+              type="date"
+              [(ngModel)]="item.appointmentDate"
+              [ngModelOptions]="{ standalone: true }"
+              (change)="loadRescheduleAvailability(item, true)"
+            />
+          </label>
+          <label>
+            Nueva hora
+            <select
+              [(ngModel)]="item.appointmentTime"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="!item.appointmentDate"
+              (click)="loadRescheduleAvailability(item)"
+            >
+              <option value="">Selecciona hora</option>
+              <option *ngIf="loadingRescheduleSlots[item.rowNumber]" value="" disabled>
+                Consultando cupos...
+              </option>
+              <option
+                *ngIf="
+                  item.appointmentTime &&
+                  !(rescheduleSlots[item.rowNumber] || []).length
+                "
+                [value]="item.appointmentTime"
+              >
+                {{ item.appointmentTime }}
+              </option>
+              <option *ngFor="let slot of rescheduleSlots[item.rowNumber] || []" [value]="slot.time">
+                {{ slot.time }} - {{ slot.available }} cupo(s)
+              </option>
+            </select>
+          </label>
+          <button class="secondary-button reschedule-button" type="button" (click)="rescheduleAppointment(item)">
+            Reprogramar
+          </button>
+        </div>
+        <p class="reschedule-status" *ngIf="rescheduleMessages[item.rowNumber]">
+          {{ rescheduleMessages[item.rowNumber] }}
+        </p>
+
+        <div class="appointment-actions">
+          <button
+            class="secondary-button reminder-button"
+            type="button"
+            (click)="sendAppointmentReminder(item)"
+          >
+            {{ isReminderSent(item) ? 'Enviar nuevamente' : 'Enviar recordatorio' }}
+          </button>
+
+          <button
+            class="secondary-button schedule-again-button"
+            type="button"
+            (click)="scheduleAppointmentAgain(item)"
+          >
+            Agendar nuevamente
+          </button>
+
+          <button class="primary-button attended-button" type="button" (click)="markAppointmentAttended(item)">
+            Marcar atendida
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <ng-template #emptyAppointments>
+      <div class="empty-appointments">
+        <h3>Sin citas pendientes</h3>
+        <p>No hay citas pendientes para el filtro seleccionado.</p>
+      </div>
+    </ng-template>
+
+    <section id="doctor-bloqueos" class="schedule-panel">
+      <div>
+        <p class="eyebrow">No disponible</p>
+        <h3>Bloquear dia u hora</h3>
+      </div>
+
+      <form class="schedule-form block-form" (ngSubmit)="saveUnavailableBlock()">
+        <label>
+          Fecha
+          <input type="date" name="blockDate" required [(ngModel)]="blockForm.blockDate" />
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" name="fullDay" [(ngModel)]="blockForm.fullDay" />
+          Dia completo
+        </label>
+
+        <label>
+          Inicio
+          <input
+            type="time"
+            name="blockStartTime"
+            [disabled]="blockForm.fullDay"
+            [(ngModel)]="blockForm.startTime"
+          />
+        </label>
+
+        <label>
+          Fin
+          <input
+            type="time"
+            name="blockEndTime"
+            [disabled]="blockForm.fullDay"
+            [(ngModel)]="blockForm.endTime"
+          />
+        </label>
+
+        <label>
+          Motivo
+          <input type="text" name="blockReason" [(ngModel)]="blockForm.reason" />
+        </label>
+
+        <button class="primary-button schedule-button" type="submit" [disabled]="isSavingBlock">
+          {{ isSavingBlock ? 'Guardando...' : 'Bloquear cupos' }}
+        </button>
+      </form>
+
+      <p class="doctor-status">{{ blockMessage }}</p>
+
+      <div class="block-list" *ngIf="activeBlocks.length; else emptyBlocks">
+        <article class="block-item" *ngFor="let block of activeBlocks">
+          <div>
+            <strong>{{ block.blockDate }}</strong>
+            <span>
+              {{ block.fullDay ? 'Dia completo' : block.startTime + ' - ' + block.endTime }}
+            </span>
+            <small>{{ block.reason || 'No disponible' }}</small>
+          </div>
+
+          <button class="secondary-button block-remove-button" type="button" (click)="removeBlock(block)">
+            Quitar bloqueo
+          </button>
+        </article>
+      </div>
+
+      <ng-template #emptyBlocks>
+        <p class="doctor-status" *ngIf="!isLoadingBlocks">No hay bloqueos activos.</p>
+      </ng-template>
+    </section>
+  </section>
+
+  <ng-template #appointmentFormPanel>
     <div id="contacto" class="contact-panel">
       <p class="eyebrow">Agenda tu cita</p>
       <h2>Envia tus datos por WhatsApp.</h2>
@@ -143,9 +458,12 @@
               required
               min="1"
               max="120"
-              placeholder="Ej. 28"
+              placeholder="1 a 120"
               [(ngModel)]="appointment.age"
             />
+            <span class="field-error" *ngIf="appointment.age && !isValidAgeValue">
+              La edad debe estar entre 1 y 120.
+            </span>
           </label>
 
           <label>
@@ -153,9 +471,15 @@
             <input
               type="tel"
               name="phone"
+              required
+              pattern="[0-9]{4}-[0-9]{4}"
               placeholder="Ej. 9999-9999"
               [(ngModel)]="appointment.phone"
+              (input)="formatPhone($event)"
             />
+            <span class="field-error" *ngIf="appointment.phone && !isValidPhoneValue">
+              Usa el formato 9544-5810.
+            </span>
           </label>
         </div>
 
@@ -166,15 +490,36 @@
           </select>
         </label>
 
-        <label>
-          Horario preferido
-          <input
-            type="text"
-            name="preferredSchedule"
-            placeholder="Ej. lunes por la tarde"
-            [(ngModel)]="appointment.preferredSchedule"
-          />
-        </label>
+        <div class="form-row">
+          <label>
+            Fecha de cita
+            <input
+              type="date"
+              name="appointmentDate"
+              required
+              [min]="minAppointmentDate"
+              [(ngModel)]="appointment.appointmentDate"
+              (change)="loadAvailability()"
+            />
+          </label>
+
+          <label>
+            Hora disponible
+            <select
+              name="appointmentTime"
+              required
+              [disabled]="isLoadingAvailability || !availableSlots.length"
+              [(ngModel)]="appointment.appointmentTime"
+            >
+              <option value="">Selecciona una hora</option>
+              <option *ngFor="let slot of availableSlots" [value]="slot.time">
+                {{ slot.time }} - {{ slot.available }} cupo(s)
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <p class="form-status">{{ availabilityMessage }}</p>
 
         <label>
           Cuales son sus consultas
@@ -189,7 +534,7 @@
         <button
           class="primary-button whatsapp-button"
           type="submit"
-          [disabled]="appointmentForm.invalid || isSubmitting"
+          [disabled]="isSubmitting || !appointment.appointmentTime"
         >
           {{ isSubmitting ? 'Registrando...' : 'Abrir WhatsApp' }}
         </button>
@@ -203,62 +548,5 @@
         {{ siteConfig.schedule }}
       </p>
     </div>
-  </section>
-  </ng-container>
-
-  <section id="doctor" class="doctor-panel" *ngIf="showDoctorModule">
-    <div class="doctor-header">
-      <div>
-        <p class="eyebrow">Modulo medico</p>
-        <h2>Citas pendientes</h2>
-        <p>Consulta las solicitudes registradas y marca cada cita cuando sea atendida.</p>
-      </div>
-
-      <button class="secondary-button refresh-button" type="button" (click)="loadPendingAppointments()">
-        {{ isLoadingAppointments ? 'Cargando...' : 'Actualizar' }}
-      </button>
-    </div>
-
-    <p class="doctor-status">{{ doctorMessage }}</p>
-
-    <div class="appointments-grid" *ngIf="doctorAppointments.length; else emptyAppointments">
-      <article class="appointment-card" *ngFor="let item of doctorAppointments">
-        <div class="appointment-card-header">
-          <div>
-            <h3>{{ item.patientName }}</h3>
-            <span>{{ item.consultationType }}</span>
-          </div>
-          <strong>{{ item.preferredSchedule || 'Sin horario' }}</strong>
-        </div>
-
-        <dl>
-          <div>
-            <dt>Edad</dt>
-            <dd>{{ item.age }}</dd>
-          </div>
-          <div>
-            <dt>Telefono</dt>
-            <dd>{{ item.phone || 'No indicado' }}</dd>
-          </div>
-          <div>
-            <dt>Registro</dt>
-            <dd>{{ item.createdAt }}</dd>
-          </div>
-        </dl>
-
-        <p class="appointment-notes">{{ item.notes || 'Sin detalle adicional.' }}</p>
-
-        <button class="primary-button attended-button" type="button" (click)="markAppointmentAttended(item)">
-          Marcar atendida
-        </button>
-      </article>
-    </div>
-
-    <ng-template #emptyAppointments>
-      <div class="empty-appointments">
-        <h3>Sin citas pendientes</h3>
-        <p>Cuando existan registros con Atendido en "No", apareceran aqui.</p>
-      </div>
-    </ng-template>
-  </section>
+  </ng-template>
 </main>
