@@ -40,11 +40,21 @@ interface SiteConfig {
   heroTitle: string;
   heroText: string;
   doctorAccessKey: string;
+  scheduleTimeStart: string;
+  scheduleTimeEnd: string;
+  appointmentSlotMinutes: string | number;
+  appointmentCapacity: string | number;
+  scheduleDays: string;
 }
 
 interface ServiceItem {
   name: string;
   description: string;
+}
+
+interface DoctorItem {
+  name: string;
+  role: string;
 }
 
 interface AvailableSlot {
@@ -112,6 +122,8 @@ export class AppComponent implements OnInit {
   isSavingSchedule = false;
   blockMessage = '';
   isSavingBlock = false;
+  settingsMessage = '';
+  isSavingSettings = false;
   activeBlocks: BlockItem[] = [];
   isLoadingBlocks = false;
   rescheduleSlots: Record<number, AvailableSlot[]> = {};
@@ -142,6 +154,11 @@ export class AppComponent implements OnInit {
     heroText:
       'Diagnostico digital, tratamientos preventivos y especialistas para cada etapa de tu cuidado dental.',
     doctorAccessKey: 'doctor',
+    scheduleTimeStart: '08:00',
+    scheduleTimeEnd: '17:00',
+    appointmentSlotMinutes: 60,
+    appointmentCapacity: 1,
+    scheduleDays: '1,2,3,4,5,6',
   };
 
   constructor(private readonly http: HttpClient) {}
@@ -186,11 +203,8 @@ export class AppComponent implements OnInit {
     },
   ];
 
-  readonly doctors = [
-    { name: 'Dra. Monica Rivera', role: 'Odontologia integral' },
-    { name: 'Dr. Javier Molina', role: 'Endodoncia' },
-    { name: 'Dra. Karla Fuentes', role: 'Ortodoncia' },
-    { name: 'Dr. Andres Cruz', role: 'Implantologia' },
+  doctors: DoctorItem[] = [
+  
   ];
 
   readonly articles = [
@@ -305,6 +319,74 @@ export class AppComponent implements OnInit {
     return value === 'si' || value === 'sí' || value === 'yes';
   }
 
+  formatDateDisplay(dateText?: string): string {
+    if (!dateText) {
+      return '';
+    }
+
+    const parts = String(dateText).split('-');
+
+    if (parts.length !== 3) {
+      return dateText;
+    }
+
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  formatTimeDisplay(timeText?: string): string {
+    if (!timeText) {
+      return '';
+    }
+
+    const match = String(timeText).match(/^(\d{1,2}):(\d{2})/);
+
+    if (!match) {
+      return timeText;
+    }
+
+    const hours = Number(match[1]);
+    const minutes = match[2];
+    const period = hours >= 12 ? 'p.m.' : 'a.m.';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes} ${period}`;
+  }
+
+  formatAppointmentSchedule(appointment: SheetAppointment): string {
+    const date = this.formatDateDisplay(appointment.appointmentDate);
+    const time = this.formatTimeDisplay(appointment.appointmentTime);
+
+    if (date && time) {
+      return `${date} ${time}`;
+    }
+
+    return appointment.preferredSchedule || 'Sin horario';
+  }
+
+  formatDateTimeDisplay(dateTimeText?: string): string {
+    if (!dateTimeText) {
+      return '';
+    }
+
+    const text = String(dateTimeText).trim();
+    const localMatch = text.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
+
+    if (localMatch) {
+      return `${localMatch[1]}/${localMatch[2]}/${localMatch[3]} ${this.formatTimeDisplay(
+        `${localMatch[4]}:${localMatch[5]}`,
+      )}`;
+    }
+
+    const date = new Date(text);
+
+    if (Number.isNaN(date.getTime())) {
+      return text;
+    }
+
+    return `${this.formatDateDisplay(this.toDateInputValue(date))} ${this.formatTimeDisplay(
+      `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`,
+    )}`;
+  }
+
   openWhatsappAppointment(): void {
     const patientName = String(this.appointment.patientName).trim();
     const age = String(this.appointment.age).trim();
@@ -326,8 +408,8 @@ export class AppComponent implements OnInit {
       `Edad: ${age}`,
       `Telefono de contacto: ${phone || 'No indicado'}`,
       `Tipo de consulta: ${this.appointment.consultationType}`,
-      `Fecha solicitada: ${appointmentDate}`,
-      `Hora solicitada: ${appointmentTime}`,
+      `Fecha solicitada: ${this.formatDateDisplay(appointmentDate)}`,
+      `Hora solicitada: ${this.formatTimeDisplay(appointmentTime)}`,
       `Detalle de la consulta: ${notes || 'No indicado'}`,
     ].join('\n');
 
@@ -432,6 +514,10 @@ export class AppComponent implements OnInit {
         if (response.consultationTypes?.length) {
           this.consultationTypes = response.consultationTypes;
           this.appointment.consultationType = this.consultationTypes[0];
+        }
+
+        if (response.doctors?.length) {
+          this.doctors = response.doctors;
         }
 
         this.hasLoadedConfig = true;
@@ -589,11 +675,11 @@ export class AppComponent implements OnInit {
     }
 
     const appointmentDate = appointment.appointmentDate || 'la fecha programada';
-    const appointmentTime = appointment.appointmentTime || appointment.preferredSchedule || 'la hora programada';
+    const appointmentTime = appointment.appointmentTime || '';
     const message = [
       `Hola ${appointment.patientName}.`,
       '',
-      `Le saludamos de ${this.siteConfig.clinicName}. Le recordamos que tiene una cita dental programada para el ${this.formatDateForMessage(appointmentDate)} a las ${appointmentTime}.`,
+      `Le saludamos de ${this.siteConfig.clinicName}. Le recordamos que tiene una cita dental programada para el ${this.formatDateDisplay(appointmentDate)} a las ${this.formatTimeDisplay(appointmentTime) || appointment.preferredSchedule || 'la hora programada'}.`,
       '',
       'Por favor confirmenos por este medio si podra asistir en la fecha y hora establecida. Si necesita reprogramar, con gusto le ayudamos.',
       '',
@@ -651,7 +737,7 @@ export class AppComponent implements OnInit {
       appointmentTime,
       notes: `Segunda cita / seguimiento. Cita anterior: ${
         appointment.originalAppointmentDate || 'sin fecha'
-      } ${appointment.originalAppointmentTime || ''}`.trim(),
+      } ${this.formatTimeDisplay(appointment.originalAppointmentTime)}`.trim(),
     };
 
     this.doctorMessage = 'Registrando segunda cita...';
@@ -671,7 +757,7 @@ export class AppComponent implements OnInit {
             const message = [
               `Hola ${appointment.patientName}.`,
               '',
-              `Le saludamos de ${this.siteConfig.clinicName}. Hemos agendado su siguiente cita dental para el ${this.formatDateForMessage(appointmentDate)} a las ${appointmentTime}.`,
+              `Le saludamos de ${this.siteConfig.clinicName}. Hemos agendado su siguiente cita dental para el ${this.formatDateDisplay(appointmentDate)} a las ${this.formatTimeDisplay(appointmentTime)}.`,
               '',
               'Si necesita realizar algun cambio, puede responder a este mensaje y con gusto le ayudamos.',
               '',
@@ -753,6 +839,74 @@ export class AppComponent implements OnInit {
         error: () => {
           this.isSavingBlock = false;
           this.blockMessage = 'No se pudo guardar el bloqueo.';
+        },
+      });
+  }
+
+  addDoctor(): void {
+    this.doctors = [...this.doctors, { name: '', role: '' }];
+  }
+
+  removeDoctor(index: number): void {
+    this.doctors = this.doctors.filter((_, itemIndex) => itemIndex !== index);
+  }
+
+  saveSiteSettings(): void {
+    const doctors = this.doctors
+      .map((doctor) => ({
+        name: doctor.name.trim(),
+        role: doctor.role.trim(),
+      }))
+      .filter((doctor) => doctor.name || doctor.role);
+    const config = {
+      clinicName: this.siteConfig.clinicName.trim(),
+      clinicSubtitle: this.siteConfig.clinicSubtitle.trim(),
+      whatsappNumber: String(this.siteConfig.whatsappNumber || '').replace(/\D/g, ''),
+      displayPhone: this.siteConfig.displayPhone.trim(),
+      address: this.siteConfig.address.trim(),
+      schedule: this.siteConfig.schedule.trim(),
+      doctorAccessKey: this.siteConfig.doctorAccessKey.trim(),
+      scheduleTimeStart: this.siteConfig.scheduleTimeStart,
+      scheduleTimeEnd: this.siteConfig.scheduleTimeEnd,
+      appointmentSlotMinutes: Number(this.siteConfig.appointmentSlotMinutes) || 60,
+      appointmentCapacity: Number(this.siteConfig.appointmentCapacity) || 1,
+      scheduleDays: this.siteConfig.scheduleDays.trim(),
+    };
+
+    this.isSavingSettings = true;
+    this.settingsMessage = 'Guardando configuracion...';
+
+    this.http
+      .post(
+        this.sheetEndpoint,
+        JSON.stringify({
+          action: 'saveSiteSettings',
+          config,
+          doctors,
+        }),
+        {
+          headers: new HttpHeaders({ 'Content-Type': 'text/plain;charset=utf-8' }),
+          responseType: 'text',
+        },
+      )
+      .subscribe({
+        next: (rawResponse) => {
+          const response = this.parseBasicResponse(rawResponse);
+          this.isSavingSettings = false;
+
+          if (response.error || response.ok === false) {
+            this.settingsMessage = response.error || response.message || 'No se pudo guardar.';
+            return;
+          }
+
+          this.doctors = doctors.length ? doctors : this.doctors;
+          this.siteConfig = { ...this.siteConfig, ...config };
+          this.settingsMessage = 'Configuracion guardada.';
+          this.loadAvailability();
+        },
+        error: () => {
+          this.isSavingSettings = false;
+          this.settingsMessage = 'No se pudo guardar la configuracion.';
         },
       });
   }
@@ -1000,16 +1154,6 @@ export class AppComponent implements OnInit {
     return '';
   }
 
-  private formatDateForMessage(dateText: string): string {
-    const parts = String(dateText || '').split('-');
-
-    if (parts.length !== 3) {
-      return dateText;
-    }
-
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  }
-
   private toDateInputValue(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1027,12 +1171,14 @@ export class AppComponent implements OnInit {
     config?: Partial<SiteConfig>;
     services?: ServiceItem[];
     consultationTypes?: string[];
+    doctors?: DoctorItem[];
   } {
     try {
       return JSON.parse(rawResponse) as {
         config?: Partial<SiteConfig>;
         services?: ServiceItem[];
         consultationTypes?: string[];
+        doctors?: DoctorItem[];
       };
     } catch {
       return {};

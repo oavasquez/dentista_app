@@ -2,6 +2,7 @@ const SHEET_NAME = 'Registros';
 const PARAMS_SHEET_NAME = 'Parametros';
 const SERVICES_SHEET_NAME = 'Servicios';
 const CONSULTATION_TYPES_SHEET_NAME = 'TiposConsulta';
+const TEAM_SHEET_NAME = 'Equipo';
 const SCHEDULE_SHEET_NAME = 'Horarios';
 const BLOCKS_SHEET_NAME = 'Bloqueos';
 const TIMEZONE = 'America/Tegucigalpa';
@@ -35,6 +36,7 @@ function doGet(e) {
         config: getParameters(),
         services: getServices(),
         consultationTypes: getConsultationTypes(),
+        doctors: getTeamMembers(),
       });
     }
 
@@ -76,6 +78,10 @@ function doPost(e) {
 
     if (data.action === 'reschedule') {
       return rescheduleAppointment(data);
+    }
+
+    if (data.action === 'saveSiteSettings') {
+      return saveSiteSettings(data);
     }
 
     return createAppointment(data);
@@ -565,8 +571,118 @@ function getConsultationTypes() {
   return types;
 }
 
+function getTeamMembers() {
+  const sheet = getSheetByName(TEAM_SHEET_NAME, false);
+
+  if (!sheet) {
+    return [];
+  }
+
+  const rows = sheet.getDataRange().getValues();
+  const doctors = [];
+
+  for (let index = 1; index < rows.length; index++) {
+    const name = String(rows[index][0] || '').trim();
+    const role = String(rows[index][1] || '').trim();
+    const active = String(rows[index][2] || 'Si').trim().toLowerCase();
+
+    if ((name || role) && active !== 'no') {
+      doctors.push({
+        name: name,
+        role: role,
+      });
+    }
+  }
+
+  return doctors;
+}
+
+function saveSiteSettings(data) {
+  const config = data.config || {};
+  const allowedKeys = [
+    'clinicName',
+    'clinicSubtitle',
+    'whatsappNumber',
+    'displayPhone',
+    'address',
+    'schedule',
+    'doctorAccessKey',
+    'scheduleTimeStart',
+    'scheduleTimeEnd',
+    'appointmentSlotMinutes',
+    'appointmentCapacity',
+    'scheduleDays',
+  ];
+
+  allowedKeys.forEach(function (key) {
+    if (Object.prototype.hasOwnProperty.call(config, key)) {
+      setParameterValue(key, String(config[key] || '').trim());
+    }
+  });
+
+  if (!data.config && Object.prototype.hasOwnProperty.call(data, 'address')) {
+    setParameterValue('address', String(data.address || '').trim());
+  }
+
+  saveTeamMembers(Array.isArray(data.doctors) ? data.doctors : []);
+  return jsonResponse({ ok: true });
+}
+
+function setParameterValue(key, value) {
+  const sheet = getOrCreateParamsSheet();
+  const rows = sheet.getDataRange().getValues();
+
+  for (let index = 1; index < rows.length; index++) {
+    if (String(rows[index][0] || '').trim() === key) {
+      sheet.getRange(index + 1, 2).setValue(value);
+      return;
+    }
+  }
+
+  sheet.appendRow([key, value]);
+}
+
+function saveTeamMembers(doctors) {
+  const sheet = getOrCreateTeamSheet();
+  sheet.clearContents();
+  sheet.appendRow(['Nombre', 'Cargo', 'Activo']);
+
+  doctors.forEach(function (doctor) {
+    const name = String(doctor.name || '').trim();
+    const role = String(doctor.role || '').trim();
+
+    if (name || role) {
+      sheet.appendRow([name, role, 'Si']);
+    }
+  });
+}
+
 function getSheet() {
   return getSheetByName(SHEET_NAME, true);
+}
+
+function getOrCreateParamsSheet() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = spreadsheet.getSheetByName(PARAMS_SHEET_NAME);
+
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(PARAMS_SHEET_NAME);
+    sheet.appendRow(['clave', 'valor']);
+  }
+
+  return sheet;
+}
+
+function getOrCreateTeamSheet() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = spreadsheet.getSheetByName(TEAM_SHEET_NAME);
+
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(TEAM_SHEET_NAME);
+    sheet.appendRow(['Nombre', 'Cargo', 'Activo']);
+  }
+
+  return sheet;
 }
 
 function getOrCreateScheduleSheet() {

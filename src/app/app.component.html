@@ -82,7 +82,7 @@
   <section id="equipo" class="team-section">
     <div class="section-heading">
       <p class="eyebrow">Dentistas</p>
-      <h2>Especialistas coordinados para un plan completo.</h2>
+      <h2>Especialistas con experiencia.</h2>
     </div>
 
     <div class="team-grid">
@@ -170,7 +170,11 @@
         />
       </a>
 
-     
+      <div class="doctor-nav-links">
+        <a href="#doctor-citas">Citas</a>
+        <a href="#doctor-config">Configuracion</a>
+        <a href="#doctor-bloqueos">Bloqueos</a>
+      </div>
 
       <button class="nav-cta doctor-refresh" type="button" (click)="loadPendingAppointments()">
         {{ isLoadingAppointments ? 'Cargando...' : 'Actualizar' }}
@@ -263,7 +267,7 @@
             <h3>{{ item.patientName }}</h3>
             <span>{{ item.consultationType }}</span>
           </div>
-          <strong>{{ item.preferredSchedule || 'Sin horario' }}</strong>
+          <strong>{{ formatAppointmentSchedule(item) }}</strong>
         </div>
 
         <dl>
@@ -277,7 +281,7 @@
           </div>
           <div>
             <dt>Registro</dt>
-            <dd>{{ item.createdAt }}</dd>
+            <dd>{{ formatDateTimeDisplay(item.createdAt) }}</dd>
           </div>
         </dl>
 
@@ -312,10 +316,10 @@
                 "
                 [value]="item.appointmentTime"
               >
-                {{ item.appointmentTime }}
+                {{ formatTimeDisplay(item.appointmentTime) }}
               </option>
               <option *ngFor="let slot of rescheduleSlots[item.rowNumber] || []" [value]="slot.time">
-                {{ slot.time }} - {{ slot.available }} cupo(s)
+                {{ formatTimeDisplay(slot.time) }} - {{ slot.available }} cupo(s)
               </option>
             </select>
           </label>
@@ -357,6 +361,172 @@
         <p>No hay citas pendientes para el filtro seleccionado.</p>
       </div>
     </ng-template>
+
+    <section id="doctor-config" class="settings-panel">
+      <div>
+        <p class="eyebrow">Configuracion</p>
+        <h3>Datos de la clinica y equipo</h3>
+      </div>
+
+      <form class="settings-form" (ngSubmit)="saveSiteSettings()">
+        <div class="settings-grid">
+          <label>
+            Nombre de la clinica
+            <input
+              type="text"
+              name="clinicName"
+              placeholder="Ej. Clinica Dental FUENTES"
+              [(ngModel)]="siteConfig.clinicName"
+            />
+          </label>
+
+          <label>
+            Subtitulo
+            <input
+              type="text"
+              name="clinicSubtitle"
+              placeholder="Ej. Salud dental integral"
+              [(ngModel)]="siteConfig.clinicSubtitle"
+            />
+          </label>
+
+          <label>
+            WhatsApp internacional
+            <input
+              type="text"
+              name="whatsappNumber"
+              placeholder="Ej. 50494000741"
+              [(ngModel)]="siteConfig.whatsappNumber"
+            />
+          </label>
+
+          <label>
+            Telefono visible
+            <input
+              type="text"
+              name="displayPhone"
+              placeholder="Ej. 9400-0741"
+              [(ngModel)]="siteConfig.displayPhone"
+            />
+          </label>
+
+          <label class="settings-wide">
+            Direccion de la clinica
+            <input
+              type="text"
+              name="clinicAddress"
+              placeholder="Ej. Col. Medica, Tegucigalpa"
+              [(ngModel)]="siteConfig.address"
+            />
+          </label>
+
+          <label class="settings-wide">
+            Horario visible
+            <input
+              type="text"
+              name="clinicSchedule"
+              placeholder="Ej. Lunes a sabado: 8:00 am - 4:00 pm"
+              [(ngModel)]="siteConfig.schedule"
+            />
+          </label>
+
+          <label>
+            Clave del modulo doctor
+            <input
+              type="text"
+              name="doctorAccessKey"
+              placeholder="Ej. doctor"
+              [(ngModel)]="siteConfig.doctorAccessKey"
+            />
+          </label>
+
+          <label>
+            Dias de atencion
+            <input
+              type="text"
+              name="scheduleDays"
+              placeholder="Ej. 1,2,3,4,5,6"
+              [(ngModel)]="siteConfig.scheduleDays"
+            />
+          </label>
+
+          <label>
+            Hora inicio
+            <input type="time" name="scheduleTimeStart" [(ngModel)]="siteConfig.scheduleTimeStart" />
+          </label>
+
+          <label>
+            Hora fin
+            <input type="time" name="scheduleTimeEnd" [(ngModel)]="siteConfig.scheduleTimeEnd" />
+          </label>
+
+          <label>
+            Minutos por cita
+            <input
+              type="number"
+              name="appointmentSlotMinutes"
+              min="5"
+              step="5"
+              [(ngModel)]="siteConfig.appointmentSlotMinutes"
+            />
+          </label>
+
+          <label>
+            Cupos por horario
+            <input
+              type="number"
+              name="appointmentCapacity"
+              min="1"
+              step="1"
+              [(ngModel)]="siteConfig.appointmentCapacity"
+            />
+          </label>
+        </div>
+
+        <p class="settings-help">Dias: 1 lunes, 2 martes, 3 miercoles, 4 jueves, 5 viernes, 6 sabado, 0 domingo.</p>
+
+        <div class="settings-heading">
+          <h4>Especialistas o personal a cargo</h4>
+          <button class="secondary-button add-doctor-button" type="button" (click)="addDoctor()">
+            Agregar
+          </button>
+        </div>
+
+        <div class="doctor-editor-list">
+          <article class="doctor-editor-row" *ngFor="let doctor of doctors; let i = index">
+            <label>
+              Nombre
+              <input
+                type="text"
+                [name]="'doctorName' + i"
+                placeholder="Ej. Dra. Karla Fuentes"
+                [(ngModel)]="doctor.name"
+              />
+            </label>
+
+            <label>
+              Cargo o especialidad
+              <input
+                type="text"
+                [name]="'doctorRole' + i"
+                placeholder="Ej. Ortodoncia"
+                [(ngModel)]="doctor.role"
+              />
+            </label>
+
+            <button class="secondary-button remove-doctor-button" type="button" (click)="removeDoctor(i)">
+              Quitar
+            </button>
+          </article>
+        </div>
+
+        <button class="primary-button settings-save-button" type="submit" [disabled]="isSavingSettings">
+          {{ isSavingSettings ? 'Guardando...' : 'Guardar configuracion' }}
+        </button>
+      </form>
+
+      <p class="doctor-status" *ngIf="settingsMessage">{{ settingsMessage }}</p>
+    </section>
 
     <section id="doctor-bloqueos" class="schedule-panel">
       <div>
@@ -513,7 +683,7 @@
             >
               <option value="">Selecciona una hora</option>
               <option *ngFor="let slot of availableSlots" [value]="slot.time">
-                {{ slot.time }} - {{ slot.available }} cupo(s)
+                {{ formatTimeDisplay(slot.time) }} - {{ slot.available }} cupo(s)
               </option>
             </select>
           </label>
