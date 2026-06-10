@@ -308,51 +308,15 @@
 
           <p class="appointment-notes">{{ item.notes || 'Sin detalle adicional.' }}</p>
 
-          <div class="reschedule-row">
-            <label>
-              Nueva fecha
-              <input
-                type="date"
-                [(ngModel)]="item.appointmentDate"
-                [ngModelOptions]="{ standalone: true }"
-                (change)="loadRescheduleAvailability(item, true)"
-              />
-            </label>
-            <label>
-              Nueva hora
-              <select
-                [(ngModel)]="item.appointmentTime"
-                [ngModelOptions]="{ standalone: true }"
-                [disabled]="!item.appointmentDate"
-                (click)="loadRescheduleAvailability(item)"
-              >
-                <option value="">Selecciona hora</option>
-                <option *ngIf="loadingRescheduleSlots[item.rowNumber]" value="" disabled>
-                  Consultando cupos...
-                </option>
-                <option
-                  *ngIf="
-                    item.appointmentTime &&
-                    !(rescheduleSlots[item.rowNumber] || []).length
-                  "
-                  [value]="item.appointmentTime"
-                >
-                  {{ formatTimeDisplay(item.appointmentTime) }}
-                </option>
-                <option *ngFor="let slot of rescheduleSlots[item.rowNumber] || []" [value]="slot.time">
-                  {{ formatTimeDisplay(slot.time) }} - {{ slot.available }} cupo(s)
-                </option>
-              </select>
-            </label>
-            <button class="secondary-button reschedule-button" type="button" (click)="rescheduleAppointment(item)">
+          <div class="appointment-actions">
+            <button
+              class="secondary-button reschedule-button"
+              type="button"
+              (click)="openScheduleModal(item, 'reschedule')"
+            >
               Reprogramar
             </button>
-          </div>
-          <p class="reschedule-status" *ngIf="rescheduleMessages[item.rowNumber]">
-            {{ rescheduleMessages[item.rowNumber] }}
-          </p>
 
-          <div class="appointment-actions">
             <button
               class="secondary-button reminder-button"
               type="button"
@@ -364,7 +328,7 @@
             <button
               class="secondary-button schedule-again-button"
               type="button"
-              (click)="scheduleAppointmentAgain(item)"
+              (click)="openScheduleModal(item, 'again')"
             >
               Agendar nuevamente
             </button>
@@ -383,6 +347,75 @@
         </div>
       </ng-template>
     </ng-container>
+
+    <div
+      class="modal-backdrop"
+      *ngIf="scheduleModalAppointment"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="scheduleModalTitle"
+    >
+      <div class="schedule-modal">
+        <div class="schedule-modal-header">
+          <div>
+            <p class="eyebrow">
+              {{ scheduleModalMode === 'again' ? 'Nueva cita' : 'Reprogramar cita' }}
+            </p>
+            <h3 id="scheduleModalTitle">{{ scheduleModalAppointment.patientName }}</h3>
+            <span>{{ scheduleModalAppointment.consultationType }}</span>
+          </div>
+
+          <button class="modal-close" type="button" aria-label="Cerrar modal" (click)="closeScheduleModal()">
+            X
+          </button>
+        </div>
+
+        <div class="reschedule-row modal-schedule-row">
+          <label class="modal-wide-field" *ngIf="scheduleModalMode === 'again'">
+            Siguiente consulta
+            <select
+              [(ngModel)]="scheduleModalConsultationType"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <option *ngFor="let type of consultationTypes" [value]="type">{{ type }}</option>
+            </select>
+          </label>
+
+          <label>
+            Fecha
+            <input
+              type="date"
+              [(ngModel)]="scheduleModalDate"
+              [ngModelOptions]="{ standalone: true }"
+              (change)="loadScheduleModalAvailability(true)"
+            />
+          </label>
+
+          <label>
+            Hora disponible
+            <select
+              [(ngModel)]="scheduleModalTime"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="!scheduleModalDate || isLoadingScheduleModalSlots"
+            >
+              <option value="">Selecciona hora</option>
+              <option *ngFor="let slot of scheduleModalSlots" [value]="slot.time">
+                {{ formatTimeDisplay(slot.time) }} - {{ slot.available }} cupo(s)
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <p class="reschedule-status">{{ scheduleModalMessage }}</p>
+
+        <div class="modal-actions">
+          <button class="secondary-button" type="button" (click)="closeScheduleModal()">Cancelar</button>
+          <button class="primary-button" type="button" (click)="confirmScheduleModal()">
+            {{ scheduleModalMode === 'again' ? 'Agendar nuevamente' : 'Reprogramar' }}
+          </button>
+        </div>
+      </div>
+    </div>
 
     <section id="doctor-config" class="settings-panel" *ngIf="!showDoctorAppointmentsOnly">
       <div>

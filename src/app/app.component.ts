@@ -130,6 +130,14 @@ export class AppComponent implements OnInit {
   rescheduleSlots: Record<number, AvailableSlot[]> = {};
   rescheduleMessages: Record<number, string> = {};
   loadingRescheduleSlots: Record<number, boolean> = {};
+  scheduleModalAppointment: SheetAppointment | null = null;
+  scheduleModalMode: 'reschedule' | 'again' = 'reschedule';
+  scheduleModalDate = '';
+  scheduleModalTime = '';
+  scheduleModalConsultationType = '';
+  scheduleModalSlots: AvailableSlot[] = [];
+  scheduleModalMessage = '';
+  isLoadingScheduleModalSlots = false;
   appointmentFilterMode: AppointmentFilterMode = 'today';
   appointmentFilterDate = '';
   appointmentFilterStartDate = '';
@@ -634,11 +642,6 @@ export class AppComponent implements OnInit {
           this.rescheduleSlots = {};
           this.rescheduleMessages = {};
           this.loadingRescheduleSlots = {};
-          this.doctorAppointments.forEach((appointment) => {
-            if (appointment.appointmentDate) {
-              this.loadRescheduleAvailability(appointment);
-            }
-          });
           this.isLoadingAppointments = false;
           this.doctorMessage = this.doctorAppointments.length
             ? `${this.doctorAppointments.length} cita(s) pendiente(s).`
@@ -721,6 +724,101 @@ export class AppComponent implements OnInit {
       });
   }
 
+  openScheduleModal(appointment: SheetAppointment, mode: 'reschedule' | 'again'): void {
+    this.scheduleModalAppointment = appointment;
+    this.scheduleModalMode = mode;
+    this.scheduleModalDate = appointment.appointmentDate || this.minAppointmentDate;
+    this.scheduleModalTime = mode === 'reschedule' ? appointment.appointmentTime || '' : '';
+    this.scheduleModalConsultationType = appointment.consultationType || this.consultationTypes[0] || '';
+    this.scheduleModalSlots = [];
+    this.scheduleModalMessage = '';
+    this.loadScheduleModalAvailability();
+  }
+
+  closeScheduleModal(): void {
+    this.scheduleModalAppointment = null;
+    this.scheduleModalDate = '';
+    this.scheduleModalTime = '';
+    this.scheduleModalConsultationType = '';
+    this.scheduleModalSlots = [];
+    this.scheduleModalMessage = '';
+    this.isLoadingScheduleModalSlots = false;
+  }
+
+  loadScheduleModalAvailability(resetTime = false): void {
+    if (!this.scheduleModalAppointment) {
+      return;
+    }
+
+    if (resetTime) {
+      this.scheduleModalTime = '';
+    }
+
+    if (!this.scheduleModalDate) {
+      this.scheduleModalSlots = [];
+      this.scheduleModalMessage = 'Selecciona una fecha para ver cupos.';
+      return;
+    }
+
+    this.isLoadingScheduleModalSlots = true;
+    this.scheduleModalMessage = 'Consultando cupos...';
+
+    this.http
+      .get(
+        `${this.sheetEndpoint}?action=availability&date=${encodeURIComponent(
+          this.scheduleModalDate,
+        )}&excludeRow=${encodeURIComponent(String(this.scheduleModalAppointment.rowNumber))}`,
+        { responseType: 'text' },
+      )
+      .subscribe({
+        next: (rawResponse) => {
+          const response = this.parseAvailabilityResponse(rawResponse);
+          this.isLoadingScheduleModalSlots = false;
+
+          if (response.error) {
+            this.scheduleModalSlots = [];
+            this.scheduleModalMessage = `Error: ${response.error}`;
+            return;
+          }
+
+          this.scheduleModalSlots = response.slots || [];
+          this.scheduleModalMessage = this.scheduleModalSlots.length
+            ? `${this.scheduleModalSlots.length} horario(s) disponible(s).`
+            : 'No hay cupos para esa fecha.';
+        },
+        error: () => {
+          this.isLoadingScheduleModalSlots = false;
+          this.scheduleModalSlots = [];
+          this.scheduleModalMessage = 'No se pudieron consultar los cupos.';
+        },
+      });
+  }
+
+  confirmScheduleModal(): void {
+    if (!this.scheduleModalAppointment) {
+      return;
+    }
+
+    if (!this.scheduleModalDate || !this.scheduleModalTime) {
+      this.scheduleModalMessage = 'Selecciona fecha y hora.';
+      return;
+    }
+
+    if (this.scheduleModalMode === 'again') {
+      this.scheduleAppointmentAgain({
+        ...this.scheduleModalAppointment,
+        consultationType: this.scheduleModalConsultationType,
+        appointmentDate: this.scheduleModalDate,
+        appointmentTime: this.scheduleModalTime,
+      });
+      return;
+    }
+
+    this.scheduleModalAppointment.appointmentDate = this.scheduleModalDate;
+    this.scheduleModalAppointment.appointmentTime = this.scheduleModalTime;
+    this.rescheduleAppointment(this.scheduleModalAppointment);
+  }
+
   scheduleAppointmentAgain(appointment: SheetAppointment): void {
     const appointmentDate = String(appointment.appointmentDate || '').trim();
     const appointmentTime = String(appointment.appointmentTime || '').trim();
@@ -728,6 +826,7 @@ export class AppComponent implements OnInit {
 
     if (!appointmentDate || !appointmentTime) {
       this.doctorMessage = 'Selecciona fecha y hora para agendar nuevamente.';
+      this.scheduleModalMessage = this.doctorMessage;
       return;
     }
 
@@ -736,6 +835,7 @@ export class AppComponent implements OnInit {
       appointmentTime === appointment.originalAppointmentTime
     ) {
       this.doctorMessage = 'Selecciona una fecha u hora diferente para la segunda cita.';
+      this.scheduleModalMessage = this.doctorMessage;
       return;
     }
 
@@ -762,6 +862,7 @@ export class AppComponent implements OnInit {
       .subscribe({
         next: () => {
           this.doctorMessage = 'Segunda cita registrada. Abriendo WhatsApp...';
+          this.closeScheduleModal();
           this.loadPendingAppointments();
           this.loadAvailability();
 
@@ -784,6 +885,7 @@ export class AppComponent implements OnInit {
         },
         error: () => {
           this.doctorMessage = 'No se pudo registrar la segunda cita.';
+          this.scheduleModalMessage = this.doctorMessage;
         },
       });
   }
@@ -1010,12 +1112,17 @@ export class AppComponent implements OnInit {
       .subscribe({
         next: () => {
           appointment.preferredSchedule = `${appointment.appointmentDate} ${appointment.appointmentTime}`;
+          appointment.originalAppointmentDate = appointment.appointmentDate;
+          appointment.originalAppointmentTime = appointment.appointmentTime;
           this.doctorMessage = 'Cita reprogramada.';
-          this.loadRescheduleAvailability(appointment);
+          this.closeScheduleModal();
           this.loadAvailability();
         },
         error: () => {
+          appointment.appointmentDate = appointment.originalAppointmentDate;
+          appointment.appointmentTime = appointment.originalAppointmentTime;
           this.doctorMessage = 'No se pudo reprogramar la cita.';
+          this.scheduleModalMessage = this.doctorMessage;
         },
       });
   }
